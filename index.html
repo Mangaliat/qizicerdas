@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GiziCerdas Desktop</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    /* ===== Gaya tampilan GiziCerdas ===== */
+    :root {
+      --bg: #F3F4F6;
+      --ph: #FFFFFF;
+      --card: #fff;
+      --tx: #1F2937;
+      --mu: #6B7280;
+      --g: #2563EB;
+      --gd: #1D4ED8;
+      --gl: #EAF1FF;
+      --or: #F59E0B;
+      --ln: #E5E7EB;
+      --bad: #DC2626;
+    }
+
+    :root[data-theme=dark] {
+      --bg: #0B1220;
+      --ph: #111827;
+      --card: #1F2937;
+      --tx: #F3F4F6;
+      --mu: #9CA3AF;
+      --g: #3B82F6;
+      --gd: #2563EB;
+      --gl: #1E3A5F;
+      --ln: #374151;
+    }
+
+    #sc.splash,
+    #sc.login,
+    #sc.reg {
+      --g: #2F8F4E;
+      --gd: #1F6B38;
+      --gl: #DDEFD8;
+    }
+
+    :root[data-theme=dark] #sc.splash,
+    :root[data-theme=dark] #sc.login,
+    :root[data-theme=dark] #sc.reg {
+      --g: #4FB872;
+      --gd: #2F8F4E;
+      --gl: #27422D;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: Nunito, system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #ph {
+      width: 100%;
+      max-width: 390px;
+      height: 100%;
+      max-height: 800px;
+      background: var(--ph);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    @media (min-width: 430px) {
+      #ph {
+        border-radius: 32px;
+        border: 8px solid var(--tx);
+        height: min(800px, 96vh);
+      }
+    }
+
+    #sc {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 18px 24px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 800;
+      margin: 16px 0 8px;
+    }
+
+    p,
+    .mu {
+      color: var(--mu);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--ln);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--g);
+      color: #fff;
+      font: 800 15px Nunito, sans-serif;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn.o {
+      background: transparent;
+      color: var(--g);
+      border: 2px solid var(--g);
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--ln);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--tx);
+      font: 600 14px Nunito, sans-serif;
+      margin-top: 8px;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--or);
+      outline-offset: 2px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sp {
+      justify-content: space-between;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .tile {
+      background: var(--card);
+      border: 1px solid var(--ln);
+      border-radius: 16px;
+      padding: 12px 4px;
+      text-align: center;
+      font: 700 12px Nunito, sans-serif;
+      color: var(--tx);
+      cursor: pointer;
+    }
+
+    .tile b {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+
+    .chip {
+      padding: 6px 12px;
+      border-radius: 99px;
+      background: var(--gl);
+      color: var(--tx);
+      font: 700 12px Nunito, sans-serif;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .chip.on {
+      background: var(--g);
+      color: #fff;
+    }
+
+    .ic {
+      font-size: 30px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--gl);
+      display: grid;
+      place-items: center;
+      flex: none;
+    }
+
+    #nav[hidden] {
+      display: none;
+    }
+
+    #nav {
+      display: flex;
+      border-top: 1px solid var(--ln);
+      background: var(--card);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    #nav button {
+      flex: 1;
+      border: 0;
+      background: none;
+      padding: 9px 0 8px;
+      font: 700 11px Nunito, sans-serif;
+      color: var(--mu);
+      cursor: pointer;
+    }
+
+    #nav button span {
+      display: block;
+      font-size: 20px;
+    }
+
+    #nav button.on {
+      color: var(--g);
+    }
+
+    .back {
+      border: 0;
+      background: none;
+      font: 800 15px Nunito, sans-serif;
+      color: var(--g);
+      cursor: pointer;
+      padding: 0 0 10px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--g), var(--gd));
+      color: #fff;
+      border-radius: 20px;
+      padding: 18px;
+      margin: 12px 0;
+    }
+
+    .hero p {
+      color: #E6EEFF;
+    }
+
+    .big {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .sw {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex: none;
+    }
+
+    .sw input {
+      opacity: 0;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .sw i {
+      position: absolute;
+      inset: 0;
+      background: var(--ln);
+      border-radius: 99px;
+      transition: .2s;
+    }
+
+    .sw i:after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      transition: .2s;
+    }
+
+    .sw input:checked+i {
+      background: var(--g);
+    }
+
+    .sw input:checked+i:after {
+      left: 23px;
+    }
+
+    .opt {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 12px;
+      border: 2px solid var(--ln);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--tx);
+      font: 700 14px Nunito, sans-serif;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    .opt.ok {
+      border-color: var(--g);
+      background: var(--gl);
+    }
+
+    .opt.no {
+      border-color: var(--bad);
+    }
+
+    .bar {
+      height: 10px;
+      background: var(--ln);
+      border-radius: 9px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--or);
+    }
+
+    #toast {
+      position: absolute;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      background: var(--tx);
+      color: var(--ph);
+      padding: 9px 16px;
+      border-radius: 99px;
+      font: 700 13px Nunito, sans-serif;
+      opacity: 0;
+      transition: .25s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.s {
+      opacity: 1;
+    }
+
+    .ctr {
+      text-align: center;
+    }
+
+    @media (min-width: 700px) {
+      #ph {
+        max-width: none;
+        max-height: none;
+        width: 100%;
+        height: 100%;
+        flex-direction: row;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      #nav {
+        order: -1;
+        flex-direction: column;
+        width: 210px;
+        flex: none;
+        border-top: 0;
+        border-right: 1px solid var(--ln);
+        padding: 22px 12px;
+        gap: 4px;
+      }
+      #nav:before {
+        content: "🥗 GiziCerdas";
+        font: 800 20px Nunito, sans-serif;
+        color: var(--g);
+        padding: 0 12px 18px;
+      }
+      #nav button {
+        flex: none;
+        text-align: left;
+        padding: 12px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+      }
+      #nav button span {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      #nav button.on {
+        background: var(--gl);
+      }
+      #nav button:hover {
+        background: var(--gl);
+      }
+      #sc {
+        padding: 32px 44px;
+      }
+      #sc>* {
+        max-width: none;
+      }
+      #sc.art>*,
+      #sc.kuis>*,
+      #sc.tambah>*,
+      #sc.tambahmenu>*,
+      #sc.gizi>*,
+      #sc.ping>* {
+        max-width: 760px;
+      }
+      #sc.splash,
+      #sc.login,
+      #sc.reg {
+        max-width: 460px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      #sc.splash>*,
+      #sc.login>*,
+      #sc.reg>* {
+        max-width: none;
+      }
+      .grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+      h1 {
+        font-size: 28px;
+      }
+      #toast {
+        bottom: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="ph"><div id="sc"></div><nav id="nav" hidden></nav><div id="toast" role="status"></div></div>
+<script>
+    /* ===== Data dan logika GiziCerdas ===== */
+    const S = {
+        user: {
+            nama: "Azraini", email: "azraini@gmail.com", tb: 158, bb: 50, usia: 21
+        }, logs: {
+            Sarapan: [["Nasi, telur, sayur tumis", "1 piring"]], "Makan Siang": [["Nasi, ayam panggang, lalapan", "1 porsi"]], "Makan Malam": [], Camilan: [["Buah pisang", "1 buah"]]
+        },
+        rem: {
+            "Waktu makan": true, "Minum air putih": true, "Baca edukasi gizi": false, "Aktivitas fisik": true, "Catat makanan harian": false
+        },
+        water: 3, tgt: {
+            "Sarapan setiap hari": 5, "Sayur & buah": 4, "Minum 8 gelas": 3
+        }, tab: "home", qi: 0, qs: 0, qa: null, cat: "Semua"
+    };
+    const ART = [
+        ["Pengertian Gizi Seimbang", "Dasar", "🥗", "Gizi seimbang adalah susunan makanan sehari-hari yang mengandung zat gizi dalam jenis dan jumlah sesuai kebutuhan tubuh. Prinsipnya: beragam makanan, pola hidup bersih, aktif bergerak, dan memantau berat badan secara teratur."],
+        ["Manfaat Sayur dan Buah", "Dasar", "🥦", "Sayur dan buah kaya vitamin, mineral, dan serat. Serat membantu pencernaan dan membuat kenyang lebih lama. Usahakan ada sayur di setiap waktu makan dan buah setiap hari."],
+        ["Sumber Protein, Karbohidrat, Vitamin", "Zat gizi", "🍗", "Karbohidrat (nasi, ubi, jagung) menjadi sumber tenaga. Protein (ikan, telur, tempe, tahu, ayam) membangun dan memperbaiki sel. Vitamin dan mineral banyak ada di sayur dan buah."],
+        ["Batasi Gula, Garam, dan Lemak", "Tips", "🧂", "Konsumsi gula, garam, dan lemak berlebihan dalam jangka panjang berkaitan dengan risiko penyakit tidak menular. Baca label kemasan dan pilih olahan yang direbus, dikukus, atau dipanggang."],
+        ["Pentingnya Sarapan", "Kebiasaan", "🍳", "Sarapan membantu tubuh punya tenaga untuk memulai hari dan membantu konsentrasi. Menu sederhana seperti nasi, telur, sayur, dan buah sudah cukup."],
+        ["Cara Menerapkan Pola Hidup Sehat", "Kebiasaan", "🏃", "Mulai dari hal kecil: makan teratur, minum air putih, bergerak minimal 30 menit sehari, dan tidur cukup. Pilih satu target dulu, lalu tambah pelan-pelan."]
+    ];
+    const MENU = {
+        Sarapan: [["Nasi + telur dadar + tumis sayur", "±380 kkal", "🍳"], ["Bubur ayam + sayur", "±300 kkal", "🥣"], ["Roti gandum + pisang", "±250 kkal", "🍌"]], "Makan Siang": [["Nasi + ikan bakar + lalapan", "±520 kkal", "🐟"], ["Nasi + tempe + sayur asam", "±480 kkal", "🍲"]], "Makan Malam": [["Nasi merah + ayam kukus + bayam", "±450 kkal", "🍗"], ["Pepes tahu + sup sayur", "±350 kkal", "🥬"]]
+    };
+    const QZ = [["Isi piringku yang benar menganjurkan separuh piring berisi…", "Sayur dan buah", ["Nasi saja", "Sayur dan buah", "Gorengan"], "Separuh piring sebaiknya sayur dan buah, sisanya makanan pokok dan lauk."],
+        ["Zat gizi sumber tenaga utama adalah…", "Karbohidrat", ["Karbohidrat", "Air", "Serat"], "Karbohidrat dari nasi, ubi, dan jagung menjadi sumber energi utama."],
+        ["Yang sebaiknya dibatasi dalam makanan sehari-hari adalah…", "Gula, garam, lemak", ["Sayur", "Air putih", "Gula, garam, lemak"], "Berlebihan pada ketiganya dapat meningkatkan risiko penyakit tidak menular."],
+        ["Manfaat utama sarapan adalah…", "Memberi tenaga memulai hari", ["Membuat mengantuk", "Memberi tenaga memulai hari", "Tidak ada manfaat"], "Sarapan membantu tubuh dan konsentrasi di awal hari."],
+        ["Contoh sumber protein nabati adalah…", "Tempe", ["Tempe", "Teh manis", "Kerupuk"], "Tempe dan tahu adalah protein nabati yang mudah ditemukan."]];
+    const $ = s => document.getElementById(s);
+    const sc = $("sc");
+    const nav = $("nav");
+    const imt = (b, t) => b / ((t / 100) ** 2);
+    const kat = v => v < 18.5 ? "Kurus" : v < 25 ? "Normal" : v < 27 ? "Berat badan lebih" : "Obesitas";
+    function toast(m) {
+        const t = $("toast");
+        t.textContent = m;
+        t.className = "s";
+        clearTimeout(t._h);
+        t._h = setTimeout(() => t.className = "", 1800);
+    }
+    function go(v, p) {
+        S.view = v;
+        S.tab = p || v;
+        draw();
+    }
+    const TABS = [["home", "🏠", "Beranda"], ["catat", "📝", "Catatan"], ["menu", "🍽️", "Menu"], ["edu", "📖", "Edukasi"], ["profil", "👤", "Profil"]];
+    const V = {
+        splash: () => `<div class="ctr" style="padding-top:70px"><div style="font-size:84px">🥗</div><h1 style="font-size:32px;color:var(--g);margin-top:8px">GiziCerdas</h1><p style="margin:6px 0 40px">Pilih Makanan Sehat, Hidup Lebih Kuat</p><p style="font-size:48px;letter-spacing:8px">🥕🍅🥚🥬</p><button class="btn" style="margin-top:50px" onclick="go('login')">Mulai</button></div>`,
+        login: () => `<div style="padding-top:30px"><div class="ctr" style="font-size:56px">🥗</div><h1 class="ctr">Selamat Datang!</h1><p class="ctr">Masuk untuk melanjutkan hidup sehat</p><input id="em" placeholder="Email atau nomor telepon" value="azraini@gmail.com"><input id="pw" type="password" placeholder="Kata sandi" value="12345678"><p style="text-align:right;margin-top:8px"><a href="#" onclick="toast('Tautan reset dikirim ke email Anda');return false" style="color:var(--g);font-weight:700">Lupa kata sandi?</a></p><button class="btn" onclick="S.user.email=$('em').value||S.user.email;go('home')">Masuk</button><button class="btn o" onclick="go('reg')">Daftar akun baru</button></div>`,
+        reg: () => `<div><button class="back" onclick="go('login')">← Kembali</button><h1>Daftar Akun</h1><p>Buat akun untuk mulai mencatat kebiasaan sehat</p><input id="rn" placeholder="Nama lengkap"><input id="re" placeholder="Email atau nomor telepon"><input type="password" placeholder="Kata sandi"><input type="password" placeholder="Konfirmasi kata sandi"><h2>Tujuan penggunaan</h2><div class="row" style="flex-wrap:wrap"><button class="chip on" onclick="this.classList.toggle('on')">Belajar gizi seimbang</button><button class="chip" onclick="this.classList.toggle('on')">Makan teratur</button></div><button class="btn" onclick="S.user.nama=($('rn').value||S.user.nama).split(' ')[0];toast('Akun berhasil dibuat');go('home')">Daftar</button></div>`,
+        home: () => {
+            const v = imt(S.user.bb, S.user.tb);
+            return `<h1>Halo, ${S.user.nama} 👋</h1><p>Yuk jaga pola makan hari ini</p><div class="hero"><p>Ringkasan gizi</p><div class="big">${v.toFixed(1)}</div><p style="margin:4px 0 12px">IMT · ${kat(v)}</p><button class="chip" onclick="go('gizi','profil')">Lihat detail</button></div>
+    <div class="grid">${[["📝", "Catatan makan", "catat"], ["🍽️", "Rekomendasi", "menu"], ["📖", "Edukasi gizi", "edu"], ["⏰", "Pengingat", "ping"], ["🧠", "Kuis gizi", "kuis"], ["👤", "Profil", "profil"]].map(t => `<button class="tile" onclick="go('${t[2]}')"><b>${t[0]}</b>${t[1]}</button>`).join("")}</div>
+    <div class="card" style="margin-top:12px"><div class="row sp"><b>💧 Air putih hari ini</b><span class="mu">${S.water}/8 gelas</span></div><div class="bar"><i style="width:${S.water / 8 * 100}%"></i></div><button class="chip" style="margin-top:10px" onclick="S.water=Math.min(8,S.water+1);draw();toast('+1 gelas')">+ Tambah gelas</button></div>
+    <div class="card"><p>💡 Tips: Separuh piringmu sebaiknya berisi sayur dan buah.</p></div>`;
+        },
+        edu: () => {
+            const cs = ["Semua", "Dasar", "Zat gizi", "Tips", "Kebiasaan"];
+            return `<h1>Edukasi Gizi</h1><input id="q" placeholder="🔍 Cari materi…" oninput="S.q=this.value;list()" value="${S.q || ""}"><div class="row" style="flex-wrap:wrap;margin:10px 0">${cs.map(c => `<button class="chip ${S.cat == c ? "on" : ""}" onclick="S.cat='${c}';draw()">${c}</button>`).join("")}</div><div id="al"></div>`;
+        },
+        art: () => {
+            const a = ART[S.ai];
+            return `<button class="back" onclick="go('edu')">← Edukasi</button><div class="ctr" style="font-size:72px">${a[2]}</div><h1>${a[0]}</h1><span class="chip" style="display:inline-block;margin:8px 0">${a[1]}</span><p style="font-size:15px;line-height:1.7;color:var(--tx)">${a[3]}</p><button class="btn" onclick="go('kuis')">Uji pemahaman lewat kuis</button>`;
+        },
+        catat: () => `<h1>Catatan Makan Harian</h1><p>Hari ini</p>${Object.keys(S.logs).map(k => `<div class="card"><div class="row sp"><b>${k}</b><button class="chip" onclick="S.add='${k}';go('tambah','catat')">+ Tambah</button></div>${S.logs[k].length ? S.logs[k].map((e, i) => `<div class="row sp" style="margin-top:8px"><span>${e[0]} <span class="mu">· ${e[1]}</span></span><button class="back" style="padding:0;color:var(--bad)" aria-label="Hapus" onclick="S.logs['${k}'].splice(${i},1);draw()">✕</button></div>`).join("") : '<p style="margin-top:6px">Belum ada catatan.</p>'}</div>`).join("")}`,
+        tambah: () => `<button class="back" onclick="go('catat')">← Batal</button><h1>Tambah ${S.add}</h1><input id="fn" placeholder="Nama makanan / minuman"><input id="fp" placeholder="Perkiraan porsi (mis. 1 piring)"><button class="btn" onclick="const n=$('fn').value.trim();if(!n){toast('Isi nama makanan dulu');return}if(!S.logs[S.add]){toast('Pilih waktu makan dulu');go('catat');return}S.logs[S.add].push([n,$('fp').value.trim()||'1 porsi']);toast('Tersimpan');go('catat')">Simpan catatan</button>`,
+        gizi: () => {
+            const v = imt(S.user.bb, S.user.tb);
+            return `<button class="back" onclick="go('profil')">← Profil</button><h1>Detail Gizi</h1><div class="hero ctr"><p>Indeks Massa Tubuh</p><div class="big">${v.toFixed(1)}</div><p>${kat(v)}</p></div><div class="row"><div style="flex:1"><label class="mu">Berat (kg)</label><input id="bb" type="number" value="${S.user.bb}"></div><div style="flex:1"><label class="mu">Tinggi (cm)</label><input id="tb" type="number" value="${S.user.tb}"></div></div><button class="btn" onclick="S.user.bb=+$('bb').value||S.user.bb;S.user.tb=+$('tb').value||S.user.tb;toast('IMT dihitung ulang');draw()">Hitung IMT</button><div class="card" style="margin-top:14px"><b>Interpretasi</b><p>Kurus &lt; 18,5 · Normal 18,5–24,9 · Berat badan lebih 25–26,9 · Obesitas ≥ 27. Berlaku untuk orang dewasa.</p></div><p>Hasil IMT adalah informasi awal dan bukan diagnosis kondisi kesehatan.</p>`;
+        },
+        menu: () => `<div class="row sp"><h1>Rekomendasi Menu</h1></div><p>Contoh menu sehat sebagai referensi</p><button class="btn" onclick="go('tambahmenu','menu')">+ Tambah menu</button>${Object.keys(MENU).map(k => `<h2>${k}</h2>${MENU[k].length ? MENU[k].map((m, i) => `<div class="card row"><div class="ic">${m[2]}</div><div style="flex:1"><b>${m[0]}</b><p>${m[1]}</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="chip" onclick="catatMenu('${k}',${i})">Catat</button>${m[3] ? `<button class="back" style="padding:0;color:var(--bad);font-size:12px" onclick="hapusMenu('${k}',${i})">Hapus</button>` : ''}</div></div>`).join("") : '<p>Belum ada menu.</p>'}`).join("")}<p>Rekomendasi bersifat umum dan dapat disesuaikan dengan kebutuhan serta bahan yang tersedia.</p>`,
+        tambahmenu: () => `<button class="back" onclick="go('menu')">← Batal</button><h1>Tambah Menu</h1><label class="mu">Waktu makan</label><select id="mk">${Object.keys(MENU).map(k => `<option>${k}</option>`).join("")}</select><input id="mn" placeholder="Nama menu (mis. Nasi + pepes ikan)"><input id="mc" type="number" min="0" placeholder="Perkiraan kalori (kkal)"><input id="me" placeholder="Emoji (opsional, mis. 🍛)" maxlength="4"><button class="btn" onclick="simpanMenu()">Simpan menu</button>`,
+        ping: () => `<button class="back" onclick="go('home')">← Beranda</button><h1>Pengingat</h1><p>Aktifkan sesuai kebutuhanmu</p><div style="margin-top:10px">${Object.keys(S.rem).map((k, i) => `<div class="card row sp"><div><b>${k}</b><p>${["07.00 · 12.00 · 18.00", "Setiap 2 jam", "19.30", "16.00", "20.00"][i]}</p></div><label class="sw"><input type="checkbox" aria-label="${k}" ${S.rem[k] ? "checked" : ""} onchange="S.rem['${k}']=this.checked;toast('${k}: '+(this.checked?'aktif':'nonaktif'))"><i></i></label></div>`).join("")}</div>`,
+        kuis: () => {
+            if (S.qi >= QZ.length) {
+                const p = S.qs / QZ.length * 100;
+                return `<div class="ctr" style="padding-top:30px"><div style="font-size:72px">${p >= 60 ? "🏆" : "💪"}</div><h1>Skor ${S.qs} / ${QZ.length}</h1><p>${p >= 60 ? "Bagus! Pemahaman gizimu sudah baik." : "Ayo pelajari lagi materinya, lalu coba ulang."}</p><button class="btn" onclick="S.qi=0;S.qs=0;S.qa=null;draw()">Ulangi kuis</button><button class="btn o" onclick="go('edu')">Buka materi edukasi</button></div>`;
+            }
+            const q = QZ[S.qi];
+            return `<button class="back" onclick="go('home')">← Beranda</button><div class="row sp"><h1>Kuis Gizi</h1><span class="mu">${S.qi + 1}/${QZ.length}</span></div><div class="bar"><i style="width:${S.qi / QZ.length * 100}%;background:var(--g)"></i></div><h2 style="margin-top:18px">${q[0]}</h2>${q[2].map(o => `<button class="opt ${S.qa ? (o == q[1] ? "ok" : o == S.qa ? "no" : "") : ""}" ${S.qa ? "disabled" : ""} onclick="ans('${o.replace(/'/g, "\\'")}')">${o}</button>`).join("")}${S.qa ? `<div class="card" style="margin-top:12px"><b>${S.qa == q[1] ? "✅ Benar!" : "❌ Belum tepat"}</b><p>${q[3]}</p></div><button class="btn" onclick="S.qi++;S.qa=null;draw()">${S.qi == QZ.length - 1 ? "Lihat skor" : "Lanjut"}</button>` : ""}`;
+        },
+        profil: () => {
+            const u = S.user;
+            return `<h1>Profil Saya</h1><div class="card row" style="margin-top:12px"><div class="ic" style="border-radius:50%">🙂</div><div><b>${u.nama}</b><p>${u.email}</p></div></div><div class="card"><b>Informasi pribadi</b><p style="margin-top:4px">Tinggi ${u.tb} cm · Berat ${u.bb} kg · IMT ${imt(u.bb, u.tb).toFixed(1)}</p><button class="chip" style="margin-top:8px" onclick="go('gizi','profil')">Ubah data</button></div><h2>Target kebiasaan sehat</h2>${Object.keys(S.tgt).map(k => `<div class="card"><div class="row sp"><b>${k}</b><span class="mu">${S.tgt[k]}/7 hari</span></div><div class="bar"><i style="width:${S.tgt[k] / 7 * 100}%;background:var(--g)"></i></div><button class="chip" style="margin-top:8px" onclick="S.tgt['${k}']=Math.min(7,S.tgt['${k}']+1);draw()">+ Hari ini tercapai</button></div>`).join("")}<div class="card row sp"><b>🌙 Tampilan gelap</b><label class="sw"><input type="checkbox" aria-label="Tampilan gelap" ${document.documentElement.dataset.theme == "dark" ? "checked" : ""} onchange="document.documentElement.dataset.theme=this.checked?'dark':'light'"><i></i></label></div><button class="btn o" onclick="toast('Data hanya dipakai untuk fungsi aplikasi')">🔒 Privasi dan bantuan</button><button class="btn o" onclick="S.tab='home';go('login')">Keluar</button>`;
+        }
+    };
+    function catatMenu(k, i) {
+        S.logs[k].push([MENU[k][i][0], "1 porsi"]);
+        toast("Ditambah ke catatan");
+    }
+    function hapusMenu(k, i) {
+        MENU[k].splice(i, 1);
+        toast("Menu dihapus");
+        draw();
+    }
+    function simpanMenu() {
+        const k = $("mk").value, n = $("mn").value.trim(), c = $("mc").value.trim(), e = $("me").value.trim();
+        if (!n) { toast("Isi nama menu dulu"); return; }
+        MENU[k].push([n, c ? "±" + c + " kkal" : "Kalori belum diisi", e || "🍽️", true]);
+        toast("Menu ditambahkan");
+        go("menu");
+    }
+    function ans(o) {
+        S.qa = o;
+        if (o == QZ[S.qi][1])
+            S.qs++;
+        draw();
+    }
+    function list() {
+        const q = (S.q || "").toLowerCase();
+        $("al").innerHTML = ART.map((a, i) => [a, i]).filter(([a]) => (S.cat == "Semua" || a[1] == S.cat) && a[0].toLowerCase().includes(q)).map(([a, i]) => `<button class="card row" style="width:100%;text-align:left;cursor:pointer;color:var(--tx);font-family:inherit" onclick="S.ai=${i};go('art','edu')"><div class="ic">${a[2]}</div><div><b>${a[0]}</b><p>${a[1]}</p></div></button>`).join("") || '<p>Materi tidak ditemukan. Coba kata kunci lain.</p>';
+    }
+    function draw() {
+        const v = S.view || "splash";
+        sc.className = v;
+        sc.innerHTML = V[v]();
+        sc.scrollTop = 0;
+        const hide = ["splash", "login", "reg"].includes(v);
+        nav.hidden = hide;
+        nav.innerHTML = TABS.map(t => `<button class="${S.tab == t[0] ? "on" : ""}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join("");
+        if (v == "edu")
+            list();
+    }
+    draw();
+  </script>
+</body>
+</html>
