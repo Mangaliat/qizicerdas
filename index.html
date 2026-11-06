@@ -500,6 +500,38 @@
         ["Yang sebaiknya dibatasi dalam makanan sehari-hari adalah…", "Gula, garam, lemak", ["Sayur", "Air putih", "Gula, garam, lemak"], "Berlebihan pada ketiganya dapat meningkatkan risiko penyakit tidak menular."],
         ["Manfaat utama sarapan adalah…", "Memberi tenaga memulai hari", ["Membuat mengantuk", "Memberi tenaga memulai hari", "Tidak ada manfaat"], "Sarapan membantu tubuh dan konsentrasi di awal hari."],
         ["Contoh sumber protein nabati adalah…", "Tempe", ["Tempe", "Teh manis", "Kerupuk"], "Tempe dan tahu adalah protein nabati yang mudah ditemukan."]];
+
+    /* ===== Akun: harus daftar dulu sebelum bisa masuk ===== */
+    const AKUN_KEY = "gizicerdas_akun";
+    let AKUN = [];
+    try { AKUN = JSON.parse(localStorage.getItem(AKUN_KEY) || "[]"); } catch (e) { AKUN = []; }
+    function simpanAkun() {
+        try { localStorage.setItem(AKUN_KEY, JSON.stringify(AKUN)); } catch (e) { /* penyimpanan tidak tersedia, akun hanya bertahan selama halaman terbuka */ }
+    }
+    const normEmail = s => (s || "").trim().toLowerCase();
+    function doReg() {
+        const nama = $("rn").value.trim(), email = normEmail($("re").value), pw = $("rp").value, kf = $("rc").value;
+        if (!nama || !email || !pw || !kf) { toast("Lengkapi semua data dulu"); return; }
+        if (pw.length < 8) { toast("Kata sandi minimal 8 karakter"); return; }
+        if (pw !== kf) { toast("Konfirmasi kata sandi tidak sama"); return; }
+        if (AKUN.some(a => a.email === email)) { toast("Akun sudah terdaftar, silakan masuk"); return; }
+        AKUN.push({ nama, email, pw });
+        simpanAkun();
+        S.lastEmail = email;
+        toast("Akun berhasil dibuat, silakan masuk");
+        go("login");
+    }
+    function doLogin() {
+        const email = normEmail($("em").value), pw = $("pw").value;
+        if (!email || !pw) { toast("Isi email dan kata sandi"); return; }
+        const a = AKUN.find(x => x.email === email);
+        if (!a) { toast("Akun belum terdaftar, silakan daftar dulu"); return; }
+        if (a.pw !== pw) { toast("Kata sandi salah"); return; }
+        S.user.nama = a.nama.split(" ")[0];
+        S.user.email = a.email;
+        S.lastEmail = a.email;
+        go("home");
+    }
     const $ = s => document.getElementById(s);
     const sc = $("sc");
     const nav = $("nav");
@@ -520,8 +552,8 @@
     const TABS = [["home", "🏠", "Beranda"], ["catat", "📝", "Catatan"], ["menu", "🍽️", "Menu"], ["edu", "📖", "Edukasi"], ["profil", "👤", "Profil"]];
     const V = {
         splash: () => `<div class="ctr" style="padding-top:70px"><div style="font-size:84px">🥗</div><h1 style="font-size:32px;color:var(--g);margin-top:8px">GiziCerdas</h1><p style="margin:6px 0 40px">Pilih Makanan Sehat, Hidup Lebih Kuat</p><p style="font-size:48px;letter-spacing:8px">🥕🍅🥚🥬</p><button class="btn" style="margin-top:50px" onclick="go('login')">Mulai</button></div>`,
-        login: () => `<div style="padding-top:30px"><div class="ctr" style="font-size:56px">🥗</div><h1 class="ctr">Selamat Datang!</h1><p class="ctr">Masuk untuk melanjutkan hidup sehat</p><input id="em" placeholder="Email atau nomor telepon" value="azraini@gmail.com"><input id="pw" type="password" placeholder="Kata sandi" value="12345678"><p style="text-align:right;margin-top:8px"><a href="#" onclick="toast('Tautan reset dikirim ke email Anda');return false" style="color:var(--g);font-weight:700">Lupa kata sandi?</a></p><button class="btn" onclick="S.user.email=$('em').value||S.user.email;go('home')">Masuk</button><button class="btn o" onclick="go('reg')">Daftar akun baru</button></div>`,
-        reg: () => `<div><button class="back" onclick="go('login')">← Kembali</button><h1>Daftar Akun</h1><p>Buat akun untuk mulai mencatat kebiasaan sehat</p><input id="rn" placeholder="Nama lengkap"><input id="re" placeholder="Email atau nomor telepon"><input type="password" placeholder="Kata sandi"><input type="password" placeholder="Konfirmasi kata sandi"><h2>Tujuan penggunaan</h2><div class="row" style="flex-wrap:wrap"><button class="chip on" onclick="this.classList.toggle('on')">Belajar gizi seimbang</button><button class="chip" onclick="this.classList.toggle('on')">Makan teratur</button></div><button class="btn" onclick="S.user.nama=($('rn').value||S.user.nama).split(' ')[0];toast('Akun berhasil dibuat');go('home')">Daftar</button></div>`,
+        login: () => `<div style="padding-top:30px"><div class="ctr" style="font-size:56px">🥗</div><h1 class="ctr">Selamat Datang!</h1><p class="ctr">Masuk untuk melanjutkan hidup sehat</p><input id="em" placeholder="Email atau nomor telepon" value="${S.lastEmail || ''}" autocomplete="username"><input id="pw" type="password" placeholder="Kata sandi" autocomplete="current-password"><p style="text-align:right;margin-top:8px"><a href="#" onclick="toast('Tautan reset dikirim ke email Anda');return false" style="color:var(--g);font-weight:700">Lupa kata sandi?</a></p><button class="btn" onclick="doLogin()">Masuk</button><button class="btn o" onclick="go('reg')">Daftar akun baru</button></div>`,
+        reg: () => `<div><button class="back" onclick="go('login')">← Kembali</button><h1>Daftar Akun</h1><p>Buat akun untuk mulai mencatat kebiasaan sehat</p><input id="rn" placeholder="Nama lengkap"><input id="re" placeholder="Email atau nomor telepon" autocomplete="username"><input id="rp" type="password" placeholder="Kata sandi (minimal 8 karakter)" autocomplete="new-password"><input id="rc" type="password" placeholder="Konfirmasi kata sandi" autocomplete="new-password"><h2>Tujuan penggunaan</h2><div class="row" style="flex-wrap:wrap"><button class="chip" onclick="this.classList.toggle('on')">Belajar gizi seimbang</button><button class="chip" onclick="this.classList.toggle('on')">Makan teratur</button></div><button class="btn" onclick="doReg()">Daftar</button></div>`,
         home: () => {
             const v = imt(S.user.bb, S.user.tb);
             return `<h1>Halo, ${S.user.nama} 👋</h1><p>Yuk jaga pola makan hari ini</p><div class="hero"><p>Ringkasan gizi</p><div class="big">${v.toFixed(1)}</div><p style="margin:4px 0 12px">IMT · ${kat(v)}</p><button class="chip" onclick="go('gizi','profil')">Lihat detail</button></div>
